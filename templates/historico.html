@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Histórico de Edições - Stockify</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='img/favicon.png') }}">
+</head>
+<body>
+    <div class="sidebar">
+        <h2>📦 StockiFY</h2>
+        <a href="{{ url_for('dashboard') }}">Dashboard</a>
+        <a href="{{ url_for('inventario') }}">Inventário</a>
+        <a href="{{ url_for('lista_pedidos_page') }}">Fazer Lista</a>
+        <a href="{{ url_for('adicionar_produto') }}">Adicionar Produto</a>
+        <a href="{{ url_for('relatorio_menu') }}">Relatórios</a>
+        <a href="{{ url_for('historico_page') }}">Histórico</a> {% if current_user.is_authenticated %}
+            <a href="{{ url_for('logout') }}" class="logout-link">LOGOUT ({{ current_user.username | capitalize }})</a>
+        {% endif %}
+    </div>
+
+    <div class="content">
+        <div class="container">
+            <h1>Histórico de Edições</h1>
+
+            {% if historico %}
+            <table class="table-inventory"> <thead>
+                    <tr>
+                        <th>Data / Hora (UTC)</th>
+                        <th>Usuário</th>
+                        <th>Produto (ID)</th>
+                        <th>Campo Alterado</th>
+                        <th>Valor Antigo</th>
+                        <th>Valor Novo</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in historico %}
+                    <tr>
+                        <td>{{ item.timestamp.strftime('%d/%m/%Y %H:%M:%S') }}</td>
+                        <td>{{ item.usuario.username | capitalize if item.usuario else 'Usuário Deletado' }}</td>
+                        <td>{{ item.produto.nome if item.produto else 'Produto Deletado' }} ({{ item.produto_id }})</td>
+                        <td>{{ item.campo_alterado | capitalize }}</td>
+                        <td>{{ item.valor_antigo }}</td>
+                        <td>{{ item.valor_novo }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <p>Nenhum histórico de edições encontrado.</p>
+            {% endif %}
+        </div>
+    </div>
+</body>
+</html>

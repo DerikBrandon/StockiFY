@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Stock Manager</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='img/favicon.png') }}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="sidebar">
+        <h2>📊 StockiFY</h2>
+        <a href="{{ url_for('dashboard') }}">Dashboard</a>
+        <a href="{{ url_for('inventario') }}">Inventário</a>
+        <a href="{{ url_for('lista_pedidos_page') }}">Fazer Lista</a>
+        <a href="{{ url_for('adicionar_produto') }}">Adicionar Produto</a>
+        <a href="{{ url_for('relatorio_menu') }}">Relatórios</a>
+        <a href="{{ url_for('historico_page') }}">Histórico</a>
+        
+        {% if current_user.is_authenticated %}
+            <a href="{{ url_for('logout') }}" class="logout-link">LOGOUT ({{ current_user.username | capitalize }})</a>
+        {% endif %}
+    </div>
+
+    <div class="content">
+    <div class="container">
+        
+       <div class="welcome-message">
+    Olá, <strong>{{ current_user.username | capitalize }}</strong>! Seja bem-vindo.
+</div>
+        
+        <h1>Dashboard do Estoque</h1>
+        <p>Análise visual das quantidades e proporções dos produtos no inventário.</p>
+            
+            <div class="charts-container">
+                <div class="chart-wrapper">
+                    <h3>Estoque Atual por Produto</h3>
+                    <canvas id="estoqueChart"></canvas>
+                </div>
+                <div class="chart-wrapper">
+                    <h3>Proporção do Estoque</h3>
+                    <canvas id="proporcaoChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Dados do Estoque (agora com nomes simples)
+        const labels = {{ labels|tojson }};
+        const data = {{ data|tojson }};
+        
+        // --- 1. GRÁFICO DE ESTOQUE ATUAL (Barras) ---
+        const ctxEstoque = document.getElementById('estoqueChart').getContext('2d');
+        new Chart(ctxEstoque, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Quantidade em Estoque',
+                    data: data,
+                    backgroundColor: 'rgba(54, 162, 235, 0.7)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: { scales: { y: { beginAtZero: true } }, responsive: true, maintainAspectRatio: false }
+        });
+
+        // --- 2. GRÁFICO DE PROPORÇÃO (Pizza) ---
+       const ctxProporcao = document.getElementById('proporcaoChart').getContext('2d');
+        new Chart(ctxProporcao, {
+            type: 'pie',
+            data: {
+                labels: labels,
+                datasets: [{
+                    data: data,
+                    backgroundColor: [ // <-- LISTA DE CORES ATUALIZADA AQUI
+                        'rgba(255, 99, 132, 0.7)',   // Rosa
+                        'rgba(54, 162, 235, 0.7)',   // Azul
+                        'rgba(255, 206, 86, 0.7)',   // Amarelo
+                        'rgba(75, 192, 192, 0.7)',   // Verde Água
+                        'rgba(153, 102, 255, 0.7)',  // Roxo
+                        'rgba(255, 159, 64, 0.7)',   // Laranja
+                        'rgba(40, 167, 69, 0.7)',    // Verde Escuro
+                        'rgba(232, 62, 140, 0.7)',   // Pink
+                        'rgba(0, 123, 255, 0.7)',    // Azul Royal
+                        'rgba(253, 126, 20, 0.7)',   // Laranja Escuro
+                        'rgba(108, 117, 125, 0.7)',  // Cinza
+                        'rgba(23, 162, 184, 0.7)',   // Ciano
+                        'rgba(220, 53, 69, 0.7)',    // Vermelho
+                        'rgba(255, 193, 7, 0.7)'     // Ambar
+                    ],
+                    borderWidth: 1,
+                    borderColor: '#fff'
+                }]
+            },
+            options: { 
+                responsive: true, 
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                        labels: {
+                            boxWidth: 10,
+                            padding: 5,
+                            font: {
+                                size: 10
+                            }
+                        }
+                    }
+                },
+                layout: {
+                    padding: 10
+                }
+            }
+        });
+    </script>
+</body>
+</html>

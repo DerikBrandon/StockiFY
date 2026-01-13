@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Relatório de {{ tipo_relatorio }} - Stock Manager</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='img/favicon.png') }}">
+</head>
+<body>
+    <div class="sidebar">
+       <h2>📦 StockiFY</h2>
+        <a href="{{ url_for('dashboard') }}">Dashboard</a>
+        <a href="{{ url_for('inventario') }}">Inventário</a>
+        <a href="{{ url_for('lista_pedidos_page') }}">Fazer Lista</a>
+        <a href="{{ url_for('adicionar_produto') }}">Adicionar Produto</a>
+        <a href="{{ url_for('relatorio_menu') }}">Relatórios</a>
+        <a href="{{ url_for('historico_page') }}">Histórico</a>
+        
+        {% if current_user.is_authenticated %}
+            <a href="{{ url_for('logout') }}" class="logout-link">LOGOUT ({{ current_user.username | capitalize }})</a>
+        {% endif %}
+    </div>
+
+    <div class="content">
+        <div class="container">
+            <h1>Relatório de {{ tipo_relatorio }}</h1>
+
+            <form method="POST" class="form-row">
+                <div>
+                    <label for="data_inicio">Data Início:</label>
+                    <input type="date" name="data_inicio" id="data_inicio" value="{{ data_inicio or '' }}">
+                </div>
+                <div>
+                    <label for="data_fim">Data Fim:</label>
+                    <input type="date" name="data_fim" id="data_fim" value="{{ data_fim or '' }}">
+                </div>
+                <button type="submit" class="btn btn-main">Filtrar</button>
+                <a href="{{ request.path }}" class="btn btn-delete">Limpar Filtro</a>
+            </form>
+
+            {% if movimentos %}
+            <table class="table-inventory">
+                <thead>
+                    <tr>
+                        <th>Data / Hora (UTC)</th>
+                        <th>Cód. Produto</th>
+                        <th>Nome do Produto</th>
+                        <th class="quantidade-col">Quantidade</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for movimento in movimentos %}
+                    <tr>
+                        <td>{{ movimento.timestamp.strftime('%d/%m/%Y %H:%M:%S') }}</td>
+                        <td>{{ movimento.produto_id }}</td>
+                        <td>{{ movimento.produto.nome }}</td>
+                        <td class="quantidade-col">{{ movimento.quantidade }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <p style="text-align: center; margin-top: 30px; font-size: 1.1em;">
+                Nenhuma movimentação de <strong>{{ tipo_relatorio.lower() }}</strong> encontrada para o período selecionado.
+            </p>
+            {% endif %}
+            
+            <div style="margin-top: 20px;">
+                <a href="{{ url_for('relatorio_menu') }}" class="btn btn-main">Voltar ao Menu de Relatórios</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

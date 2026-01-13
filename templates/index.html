@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inventário - Stockify</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='img/favicon.png') }}">
+
+    <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+</head>
+
+<body>
+
+<div class="sidebar">
+    <h2>📦 StockiFY</h2>
+
+    <a href="{{ url_for('dashboard') }}">Dashboard</a>
+    <a href="{{ url_for('inventario') }}">Inventário</a>
+    <a href="{{ url_for('lista_pedidos_page') }}">Fazer Lista</a>
+    <a href="{{ url_for('adicionar_produto') }}">Adicionar Produto</a>
+    <a href="{{ url_for('relatorio_menu') }}">Relatórios</a>
+    <a href="{{ url_for('historico_page') }}">Histórico</a>
+
+    {% if current_user.is_authenticated %}
+        <a href="{{ url_for('logout') }}" class="logout-link">
+            LOGOUT ({{ current_user.username | capitalize }})
+        </a>
+    {% endif %}
+</div>
+
+<div class="content">
+    <div class="container">
+        <h1>Inventário Atual</h1>
+
+        <div id="flash-container">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="flash flash-{{ category }}">{{ message }}</div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+        </div>
+
+        <h2>Movimentação Rápida</h2>
+
+        <!-- FORM CORRIGIDO -->
+        <form
+            hx-post="{{ url_for('movimentar') }}"
+            hx-target="#inventory-table-body"
+            hx-swap="innerHTML"
+            hx-indicator="#loading"
+            class="form-row"
+        >
+            <label>Código:</label>
+            <input type="number" name="codigo" required>
+
+            <label>Tipo:</label>
+            <select name="tipo_movimento" required>
+                <option value="entrada">Entrada</option>
+                <option value="saida">Saída</option>
+            </select>
+
+            <label>Quantidade:</label>
+            <input type="number" name="quantidade" min="1" required>
+
+            <button type="submit" class="btn btn-main">Registrar Movimento</button>
+            <span id="loading" class="htmx-indicator">Processando...</span>
+        </form>
+
+        <h2>Lista de Produtos</h2>
+
+        <table class="table-inventory">
+            <thead>
+                <tr>
+                    <th>CÓDIGO</th>
+                    <th>NOME</th>
+                    <th>QUANTIDADE</th>
+                    <th>AÇÕES</th>
+                </tr>
+            </thead>
+
+            <tbody id="inventory-table-body">
+                {% for produto in estoque %}
+                <tr>
+                    <td>{{ produto.id }}</td>
+                    <td>{{ produto.nome }}</td>
+                    <td>{{ produto.quantidade }}</td>
+                    <td>
+                        <button class="btn btn-edit"
+                            onclick="toggleEditForm('{{ produto.id }}')">
+                            Editar
+                        </button>
+
+                        <button class="btn btn-delete"
+                            hx-post="{{ url_for('excluir_produto_htmx', produto_id=produto.id) }}"
+                            hx-target="closest tr"
+                            hx-swap="outerHTML"
+                            hx-confirm="Deseja excluir {{ produto.nome }}?">
+                            Excluir
+                        </button>
+                    </td>
+                </tr>
+
+                <tr id="edit-row-{{ produto.id }}" class="edit-form-row" style="display:none">
+                    <td colspan="4">
+                        <form action="{{ url_for('editar_nome') }}" method="POST">
+                            <input type="hidden" name="codigo" value="{{ produto.id }}">
+                            <input type="text" name="novo_nome" required>
+                            <button class="btn btn-success">Salvar</button>
+                            <button type="button" class="btn btn-delete"
+                                onclick="toggleEditForm('{{ produto.id }}')">
+                                Cancelar
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script src="{{ url_for('static', filename='js/scripts.js') }}"></script>
+</body>
+</html>

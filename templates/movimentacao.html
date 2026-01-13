@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Movimentação de Estoque - StockiFY</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='img/favicon.png') }}">
+</head>
+
+<body>
+    <div class="sidebar">
+        <h2>📦 StockiFY</h2>
+
+        <a href="{{ url_for('dashboard') }}">Dashboard</a>
+        <a href="{{ url_for('inventario') }}">Inventário</a>
+        <a href="{{ url_for('movimentacao_page') }}">Movimentar Estoque</a>
+        <a href="{{ url_for('lista_pedidos_page') }}">Fazer Lista</a>
+        <a href="{{ url_for('adicionar_produto') }}">Adicionar Produto</a>
+        <a href="{{ url_for('relatorio_menu') }}">Relatórios</a>
+        <a href="{{ url_for('historico_page') }}">Histórico</a>
+
+        {% if current_user.is_authenticated %}
+            <a href="{{ url_for('logout') }}" class="logout-link">
+                LOGOUT ({{ current_user.username | capitalize }})
+            </a>
+        {% else %}
+            <a href="{{ url_for('login') }}" class="logout-link">
+                FAZER LOGIN
+            </a>
+        {% endif %}
+    </div>
+
+    <main class="content">
+        <section class="container">
+            <h1>Movimentar Estoque</h1>
+
+            <div id="flash-container">
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        <div class="flash-messages">
+                            {% for category, message in messages %}
+                                <div class="flash flash-{{ category or 'info' }}">
+                                    {{ message }}
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                {% endwith %}
+            </div>
+
+            <h2>Registro de Entrada/Saída</h2>
+
+            <form method="POST" action="{{ url_for('movimentar') }}" class="form-row form-column">
+                {{ csrf_token() }}
+
+                <div class="input-group">
+                    <label for="codigo">Código do Produto:</label>
+                    <input
+                        id="codigo"
+                        type="text"
+                        name="codigo"
+                        required
+                        class="input-codigo"
+                        placeholder="Insira o código do produto"
+                    >
+                </div>
+
+                <div class="input-group">
+                    <label for="tipo_movimento">Tipo de Movimento:</label>
+                    <select
+                        id="tipo_movimento"
+                        name="tipo_movimento"
+                        required
+                        class="select-tipo"
+                    >
+                        <option value="" disabled selected>Selecione</option>
+                        <option value="entrada">Entrada</option>
+                        <option value="saida">Saída</option>
+                    </select>
+                </div>
+
+                <div class="input-group">
+                    <label for="quantidade">Quantidade:</label>
+                    <input
+                        id="quantidade"
+                        type="number"
+                        name="quantidade"
+                        min="1"
+                        required
+                        class="input-qtd"
+                        placeholder="Min 1"
+                    >
+                </div>
+
+                <button type="submit" class="btn btn-main">
+                    Registrar Movimento
+                </button>
+            </form>
+
+            <a
+                href="{{ url_for('inventario') }}"
+                class="btn btn-secondary"
+                style="margin-top: 30px;"
+            >
+                ← Voltar para o Inventário
+            </a>
+        </section>
+    </main>
+</body>
+</html>

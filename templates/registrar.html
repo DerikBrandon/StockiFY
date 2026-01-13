@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastro - Stock Manager</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='img/favicon.png') }}">
+</head>
+<body class="login-page">
+    
+    <div class="login-box">
+        <h2>Criar Nova Conta</h2>
+        
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            <div class="flash-messages">
+              {% for category, message in messages %}
+                <div class="flash flash-{{ category }}">{{ message }}</div>
+              {% endfor %}
+            </div>
+          {% endif %}
+        {% endwith %}
+
+        <form method="POST">
+            <input type="text" name="username" placeholder="Escolha um nome de usuário" required>
+            <input type="password" name="password" placeholder="Crie uma senha" required>
+            <button type="submit">Cadastrar</button>
+        </form>
+        
+        <p style="margin-top: 20px;">
+            Já tem uma conta? <a href="{{ url_for('login') }}">Faça o login aqui</a>
+        </p>
+    </div>
+
+</body>
+</html>

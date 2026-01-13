@@ -1,0 +1,15 @@
+<tr id="linha-produto-{{ produto.id }}">
+    <td>{{ produto.id }}</td>
+    <td id="nome-{{ produto.id }}">{{ produto.nome }}</td>
+    <td class="quantidade-col">{{ produto.quantidade }}</td>
+    <td>
+        <button class="btn btn-edit" onclick="toggleEditForm('{{ produto.id }}', '{{ produto.nome }}')">Editar Nome</button>
+        <button class="btn btn-delete" 
+                hx-post="{{ url_for('excluir_produto_htmx', produto_id=produto.id) }}"
+                hx-confirm="Tem certeza que deseja excluir o produto {{ produto.nome }}?"
+                hx-target="closest tr"
+                hx-swap="outerHTML">
+            Excluir
+        </button>
+    </td>
+</tr>

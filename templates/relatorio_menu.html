@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Relatórios - Stock Manager</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='img/favicon.png') }}">
+</head>
+<body>
+    <div class="sidebar">
+        <h2>📦 StockiFY</h2>
+        <a href="{{ url_for('dashboard') }}">Dashboard</a>
+        <a href="{{ url_for('inventario') }}">Inventário</a>
+        <a href="{{ url_for('lista_pedidos_page') }}">Fazer Lista</a>
+        <a href="{{ url_for('adicionar_produto') }}">Adicionar Produto</a>
+        <a href="{{ url_for('relatorio_menu') }}">Relatórios</a>
+        <a href="{{ url_for('historico_page') }}">Histórico</a>
+        
+        {% if current_user.is_authenticated %}
+            <a href="{{ url_for('logout') }}" class="logout-link">LOGOUT ({{ current_user.username | capitalize }})</a>
+        {% endif %}
+    </div>
+
+    <div class="content">
+        <div class="container">
+            <h1>Relatórios de Movimentação</h1>
+            <p>Use o botão flutuante no canto inferior direito para exportar os relatórios em formato de planilha (CSV).</p>
+            <p>Você também pode visualizar os relatórios na tela clicando nos links abaixo:</p>
+            
+            <div class="report-options">
+                <a href="{{ url_for('relatorio_entradas') }}">Visualizar Relatório de Entradas</a>
+                <a href="{{ url_for('relatorio_saidas') }}">Visualizar Relatório de Saídas</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="fab-container">
+        <div class="fab-menu">
+            <a href="{{ url_for('exportar_entradas') }}">Exportar Entradas</a>
+            <a href="{{ url_for('exportar_saidas') }}">Exportar Saídas</a>
+        </div>
+        <button class="fab">
+            &#x21E9; </button>
+    </div>
+
+</body>
+</html>

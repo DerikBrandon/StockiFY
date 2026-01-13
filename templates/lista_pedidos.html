@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista de Pedidos - Stockify</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='img/favicon.png') }}">
+</head>
+<body>
+    
+    <div class="sidebar">
+        <h2>📦 StockiFY</h2>
+        
+        <a href="{{ url_for('dashboard') }}">Dashboard</a>
+        <a href="{{ url_for('inventario') }}">Inventário</a>
+        <a href="{{ url_for('lista_pedidos_page') }}">Fazer Lista</a>
+        <a href="{{ url_for('adicionar_produto') }}">Adicionar Produto</a>
+        <a href="{{ url_for('relatorio_menu') }}">Relatórios</a>
+        <a href="{{ url_for('historico_page') }}">Histórico</a>
+        
+        {% if current_user.is_authenticated %}
+            <a href="{{ url_for('logout') }}" class="logout-link">
+                LOGOUT ({{ current_user.username | capitalize }})
+            </a>
+        {% else %}
+            <a href="{{ url_for('login') }}" class="logout-link">
+                FAZER LOGIN
+            </a>
+        {% endif %}
+    </div>
+
+    <div class="content">
+        <div class="container">
+            <h1>Lista de Pedidos / Compras</h1>
+
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    <div class="flash-messages">
+                    {% for category, message in messages %}
+                        <div class="flash flash-{{ category }}">{{ message }}</div>
+                    {% endfor %}
+                    </div>
+                {% endif %}
+            {% endwith %}
+
+            <h2>Adicionar Item à Lista</h2>
+            <form action="{{ url_for('adicionar_a_lista') }}" method="POST" class="add-form">
+                <label for="produto_id">Produto:</label>
+                <select name="produto_id" id="produto_id" required>
+                    {% for produto in todos_produtos %}
+                        <option value="{{ produto.id }}">{{ produto.id }} - {{ produto.nome }}</option>
+                    {% endfor %}
+                </select>
+                
+                <label for="quantidade">Quantidade:</label>
+                <input type="number" name="quantidade" id="quantidade" min="1" required value="1">
+
+                <button type="submit" class="btn btn-success">Adicionar à Lista</button>
+            </form>
+
+            <h2>Itens Solicitados</h2>
+            {% if lista_itens %}
+                <table class="table-pedidos">
+                    <thead>
+                        <tr>
+                            <th>CÓDIGO</th>
+                            <th>NOME DO PRODUTO</th>
+                            <th>QUANTIDADE PEDIDA</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in lista_itens %}
+                            <tr>
+                                <td>{{ item.id }}</td>
+                                <td>{{ item.nome }}</td>
+                                <td>{{ item.quantidade_pedida }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+
+                <div class="actions-row">
+                    <form action="{{ url_for('limpar_lista') }}" method="POST" class="form-inline">
+                        <button type="submit" class="btn btn-delete" onclick="return confirm('Tem certeza que deseja limpar a lista completa?');">Limpar Lista</button>
+                    </form>
+                    <button class="btn btn-main" onclick="window.print()">Imprimir Lista</button>
+                </div>
+            {% else %}
+                <p>A lista de pedidos está vazia. Use o formulário acima para adicionar itens.</p>
+            {% endif %}
+
+        </div>
+    </div>
+</body>
+</html>
