@@ -3,7 +3,7 @@
 /* ================================================================ */
 body { font-family: Arial, sans-serif; margin: 0; background-color: #f4f4f4; display: flex; }
 
-/* --- ESTILO NOVO PARA PÁGINA DE LOGIN --- */
+
 body.login-page {
     /* Fundo Gradiente */
     background: linear-gradient(to bottom right, #004d40, #2e7d32); /* Exemplo: Teal escuro para Verde escuro */
@@ -301,4 +301,5 @@ th, td { border: 1px solid #ddd; padding: 10px; text-align: left; vertical-align
     .container { box-shadow: none; border: none; max-width: 100%; }
     h1 { text-align: left; margin-top: 0; }
     table, tr, td, th { page-break-inside: avoid; }
+
 }
